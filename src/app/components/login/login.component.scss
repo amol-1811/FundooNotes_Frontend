@@ -117,7 +117,7 @@ body {
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  max-width: 800px; /* Match login container width */
+  max-width: 800px;
   margin: 20px auto 0;
   padding: 16px 0;
 }
@@ -161,10 +161,6 @@ body {
   .right-side {
     padding: 32px 24px;
     border-left: none;
-  }
-
-  .right-side {
-    border-top: 1px solid #e0e0e0;
   }
 
   .button-group {

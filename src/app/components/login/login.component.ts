@@ -33,8 +33,10 @@ export class LoginComponent implements OnInit{
       console.log('Login Data:', loginData);
       
       this.userSer.login(loginData).subscribe(
-        (response) => {
+        (response: any) => {
           console.log('Login successful:', response);
+          localStorage.setItem('authToken', response.data);
+          this.router.navigate(['/dashboard']);
           this.snackBar.open('Login successful!', 'Close', {
             duration: 2000,
             horizontalPosition: 'center',
