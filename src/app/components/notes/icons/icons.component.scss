@@ -1,0 +1,49 @@
+.note-icons {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  
+    .icon-button {
+      border: none;
+      background: none;
+      padding: 6px;
+      border-radius: 50%;
+      transition: background-color 0.3s;
+      cursor: pointer;
+  
+      &:hover {
+        background-color: #f1f3f4;
+      }
+  
+      mat-icon {
+        font-size: 20px;
+        color: #5f6368;
+      }
+    }
+  
+    .color-palette {
+      position: absolute;
+      bottom: 40px;
+      left: 0;
+      background: #fff;
+      border: 1px solid #ccc;
+      display: flex;
+      gap: 4px;
+      padding: 4px;
+      border-radius: 4px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+  
+    .color-circle {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 1px solid #ccc;
+  
+      &:hover {
+        border: 2px solid #000;
+      }
+    }
+  }
+  

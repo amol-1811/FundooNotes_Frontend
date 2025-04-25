@@ -1,16 +1,20 @@
-import { Component} from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
+import { DisplayNoteComponent } from '../notes/display-note/display-note.component';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss']
+  styleUrls: ['./dashboard.component.scss'],
 })
-export class DashboardComponent{
-searchText: string = '';
-onSearchChange() {}
-clearSearch() {
-  this.searchText = '';
+export class DashboardComponent {
+  @ViewChild(DisplayNoteComponent) displayNoteComponent!: DisplayNoteComponent;
+  refreshTrigger: number = 0;
+  searchText: string = '';
+  isAccountMenuOpen: boolean = false;
+  onSearchChange() {}
+  clearSearch() {
+    this.searchText = '';
   }
   isSidebarOpen = true;
   navItems = [
@@ -18,41 +22,50 @@ clearSearch() {
     { icon: 'notifications', label: 'Reminders' },
     { icon: 'edit', label: 'Edit Labels' },
     { icon: 'archive', label: 'Archive' },
-    { icon: 'delete', label: 'Bin' }
+    { icon: 'delete', label: 'Bin' },
   ];
-showTooltip: any;
-userEmail: any;
-userFirstName: any;
-userLastName: any;
+  showTooltip: any;
 
-  constructor(private router: Router){}
+  constructor(private router: Router) {}
+
+  ngOnInit(): void {
+    document.addEventListener('click', this.handleClickOutside.bind(this));
+  } 
+
+  handleClickOutside(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.right-section')) {
+      this.isAccountMenuOpen = false;
+    }
+  }
 
   toggleSidebar(): void {
     this.isSidebarOpen = !this.isSidebarOpen;
   }
-  
-  logout(): void {
-    localStorage.removeItem('token');
+
+  toggleAccountMenu(): void {
+    this.isAccountMenuOpen = !this.isAccountMenuOpen;
+  }
+
+  logout(event: MouseEvent): void {
+    event.stopPropagation();
+    localStorage.removeItem('authToken');
     this.router.navigate(['/login']);
   }
-  // Add any other methods or properties you need for the dashboard component
-  // For example, you might want to fetch user data or notes here
-  // constructor(private userSer: UserService) {}
-  // ngOnInit(): void {
-  //   this.userSer.getUserData().subscribe(
-  //     (response) => {
-  //       console.log('User data:', response);
-  //     },
-  //     (error) => {
-  //       console.error('Error fetching user data:', error);
-  //     }
-  //   );
-  // }
-  // }
-  //   this.snackBar.open('Please fill in all required fields.', 'Close', {
-  //     duration: 3000,
-  //     horizontalPosition: 'center',
-  //     verticalPosition: 'top'
-  //   });
-  //   }
+
+  refreshNotes() {
+    if (this.displayNoteComponent) {
+      console.log('Refreshing notes via ViewChild...');
+      this.displayNoteComponent.getallNotes();
+    } else {
+      console.log('DisplayNoteComponent not accessible via ViewChild, using refresh trigger...');
+      this.refreshTrigger++;
+    }
+  }
+
+  allNotes: any[] = [];
+  addNote(note: any) {
+    console.log('Note added:', note);
+    this.refreshNotes();
+  }
 }

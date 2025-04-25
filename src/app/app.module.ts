@@ -22,12 +22,19 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { CreateNoteComponent } from './components/notes/create-note/create-note.component';
+import { DisplayNoteComponent } from './components/notes/display-note/display-note.component';
+import { IconsComponent } from './components/notes/icons/icons.component';
+
 
 @NgModule({
   declarations: [
     AppComponent,
     routingComponents,
-    DashboardComponent
+    DashboardComponent,
+    CreateNoteComponent,
+    DisplayNoteComponent,
+    IconsComponent
   ],
   imports: [
     BrowserModule,

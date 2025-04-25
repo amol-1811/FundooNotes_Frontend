@@ -1,0 +1,105 @@
+<!-- display-note.component.html -->
+<div class="notes-container">
+    <div *ngIf="notes.length === 0" class="empty-notes">
+        <div class="light-bulb-icon">
+            <span class="material-icons-outlined">lightbulb</span>
+        </div>
+        <p>Notes that you add appear here</p>
+    </div>
+
+    <div class="notes-grid">
+        <div *ngFor="let note of notes" class="note-card" 
+             [style.backgroundColor]="note.color" 
+             [class.selected]="selectedNotes.has(note)"
+             (click)="openNoteDetail(note)">
+            <!-- Selection checkbox -->
+            <div class="selection-checkbox" (click)="selectNote(note, $event)">
+                <span class="material-icons-outlined">{{ selectedNotes.has(note) ? 'check_circle' : 'circle' }}</span>
+            </div>
+            
+            <div class="note-header">
+                <div class="note-title">{{ note.title }}</div>
+                <button mat-icon-button class="pin-icon" (click)="togglePin(note, $event)">
+                    <span class="material-icons-outlined">{{ note.isPinned ? 'push_pin' : 'push_pin' }}</span>
+                </button>
+            </div>
+            <div class="note-body">{{ note.content }}</div>
+            <div class="note-actions">
+                <button mat-icon-button matTooltip="Background options" (click)="toggleColorPalette(note, $event)">
+                    <span class="material-icons-outlined">palette</span>
+                </button>
+                <button mat-icon-button matTooltip="Remind me" (click)="$event.stopPropagation()">
+                    <span class="material-icons-outlined">notifications</span>
+                </button>
+                <button mat-icon-button matTooltip="Collaborator" (click)="$event.stopPropagation()">
+                    <span class="material-icons-outlined">person_add</span>
+                </button>
+                <button mat-icon-button matTooltip="Add image" (click)="$event.stopPropagation()">
+                    <span class="material-icons-outlined">image</span>
+                </button>
+                <button mat-icon-button matTooltip="Archive" (click)="$event.stopPropagation()">
+                    <span class="material-icons-outlined">archive</span>
+                </button>
+                <button mat-icon-button matTooltip="More" (click)="$event.stopPropagation()">
+                    <span class="material-icons-outlined">more_vert</span>
+                </button>
+            </div>
+
+            <!-- Color palette for each note -->
+            <div *ngIf="activeColorPalette === note" class="color-palette" (click)="$event.stopPropagation()">
+                <div class="color-options">
+                    <div *ngFor="let color of colorOptions" class="color-option" [style.background-color]="color"
+                        (click)="changeNoteColor(note, color, $event)" [class.selected]="note.color === color">
+                        <span class="material-icons-outlined check-icon" *ngIf="note.color === color">check</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Note Detail Overlay -->
+<!-- <div *ngIf="selectedNote" class="note-detail-overlay">
+    <div class="overlay-backdrop" (click)="closeNoteDetail()"></div>
+    <div class="note-detail-container" [style.backgroundColor]="selectedNote.color">
+        <div class="note-detail-header">
+            <input class="note-detail-title" [(ngModel)]="selectedNote.title" placeholder="Title">
+            <button mat-icon-button class="pin-icon" (click)="togglePin(selectedNote, $event)">
+                <span class="material-icons-outlined">{{ selectedNote.isPinned ? 'push_pin' : 'push_pin' }}</span>
+            </button>
+        </div>
+        <textarea class="note-detail-body" [(ngModel)]="selectedNote.content" placeholder="Take a note..."></textarea>
+        <div class="note-actions visible">
+            <button mat-icon-button matTooltip="Background options" (click)="toggleColorPalette(selectedNote, $event)">
+                <span class="material-icons-outlined">palette</span>
+            </button>
+            <button mat-icon-button matTooltip="Remind me">
+                <span class="material-icons-outlined">notifications</span>
+            </button>
+            <button mat-icon-button matTooltip="Collaborator">
+                <span class="material-icons-outlined">person_add</span>
+            </button>
+            <button mat-icon-button matTooltip="Add image">
+                <span class="material-icons-outlined">image</span>
+            </button>
+            <button mat-icon-button matTooltip="Archive">
+                <span class="material-icons-outlined">archive</span>
+            </button>
+            <button mat-icon-button matTooltip="More">
+                <span class="material-icons-outlined">more_vert</span>
+            </button>
+            <div class="spacer"></div>
+            <button mat-button class="close-button">Close</button>
+        </div> -->
+        
+        <!-- Color palette in detail view -->
+        <!-- <div *ngIf="activeColorPalette === selectedNote?.id" class="color-palette detail-palette">
+            <div class="color-options">
+                <div *ngFor="let color of colorOptions" class="color-option" [style.background-color]="color"
+                    (click)="changeNoteColor(selectedNote, color, $event)" [class.selected]="selectedNote.color === color">
+                    <span class="material-icons-outlined check-icon" *ngIf="selectedNote.color === color">check</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> -->
