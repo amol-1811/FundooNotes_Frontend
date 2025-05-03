@@ -1,0 +1,18 @@
+<div>
+    <h5>Edit Label</h5>
+    <div class="input-section">
+        <mat-form-field style="width: 80%;">
+            <input matInput type="text" [(ngModel)]="labelText" />
+        </mat-form-field>
+        <div class="done" (click)="addLabel()">
+            <mat-icon>done</mat-icon>
+        </div>
+    </div>
+    <div *ngFor="let label of labels">
+        <div>
+            <mat-icon>label</mat-icon>
+            {{label.labelName}}
+        </div>
+    </div>
+
+</div>

@@ -47,7 +47,7 @@ export class CreateNoteComponent {
     const note = {
       id: Date.now(),
       title: this.title,
-      content: this.content,
+      description: this.content,
       isPinned: this.isPinned,
       color: this.noteColor,
       createdAt: new Date(),

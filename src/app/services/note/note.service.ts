@@ -23,47 +23,45 @@ export class NoteService {
   updateNoteColor(data: {noteId: any, Color: string}): Observable<any> {
     const headers = this.httpService.getHeader();
     
-    console.log('Update note color data:', data);
-
-    const params = new HttpParams()
-      .set('notesId', data.noteId.toString())
-      .set('Color', data.Color);
-      
-    console.log('Sending parameters:', params.toString());
-  
-    return this.httpService.putApi('/addcolor', null, headers, params);
+    console.log('Update note color data:', data.Color);
+    
+    const payload = {
+      noteId: data.noteId,
+      Color: data.Color
+    }
+        
+    return this.httpService.putApi('/addcolor', payload, headers);
   }
 
-  // updateNoteColor(data: {noteId: any, Color: string}): Observable<any> {
-  //   const headers = this.httpService.getHeader();
+  updateNote(payload: any) {
+    const headers = this.httpService.getHeader();
     
-  //   // Debug the data
-  //   console.log('Update note color data:', data);
-    
-  //   // Check if noteId exists and is not undefined
-  //   if (data.noteId === undefined) {
-  //     console.error('Note ID is undefined!');
-  //     // Return an error observable
-  //     return new Observable(observer => {
-  //       observer.error(new Error('Note ID is undefined'));
-  //     });
-  //   }
-    
-  //   // Make sure noteId is sent as a number
-  //   const noteId = Number(data.noteId);
-    
-  //   // Use template literals to create params to ensure values are properly converted to strings
-  //   const params = new HttpParams()
-  //     .set('noteId', `${noteId}`)
-  //     .set('Color', data.Color);
-      
-  //   console.log('Sending parameters:', params.toString());
-  
-  //   return this.httpService.putApi('/addcolor', null, headers, params);
-  // }
+    console.log('Updating note:', payload);
+        
+    return this.httpService.putApi(`/updatenotes?notesId=${payload.notesId}`, payload, headers);
+  }
 
   togglePin(noteId: number): Observable<any> {
     const headers = this.httpService.getHeader();
     return this.httpService.putApi(`/pinnotes${noteId}`, {}, headers);
+  }
+
+  ArchiveNote(noteId: number): Observable<any> {
+    const headers = this.httpService.getHeader();
+    return this.httpService.putApi(`/archivenote?noteId=${noteId}`, {}, headers);
+  }
+  
+  TrashNote(noteId: number): Observable<any> {
+    const headers = this.httpService.getHeader();
+    return this.httpService.putApi(`/trashnotes?noteId=${noteId}`, {}, headers);
+  }
+
+  AddReminder(data: {noteId: number, Reminder: Date}): Observable<any> {
+    const headers = this.httpService.getHeader();
+    const payload = {
+      noteId: data.noteId,
+      Reminder: data.Reminder
+    }
+    return this.httpService.putApi('/addreminder', payload, headers)
   }
 }

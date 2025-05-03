@@ -1,5 +1,4 @@
-<!-- FIXED HEADER -->
-<mat-toolbar color="primary" class="header-toolbar">
+<mat-toolbar class="header-toolbar">
     <!-- LEFT -->
     <div class="left-section">
         <button mat-icon-button (click)="toggleSidebar()" matTooltip="Main Menu">
@@ -20,7 +19,9 @@
     <!-- RIGHT -->
     <div class="right-section">
         <div class="icon-group">
-            <span class="material-icons-outlined icon" matTooltip="Refresh">refresh</span>
+            <span *ngIf="!isRefreshing" class="material-icons-outlined icon" (click)="refreshNotes()"
+                matTooltip="Refresh">refresh</span>
+            <mat-spinner *ngIf="isRefreshing" diameter="24" strokeWidth="3" class="refresh-spinner"></mat-spinner>
             <span class="material-icons-outlined icon" matTooltip="List view">view_agenda</span>
             <span class="material-icons-outlined icon" matTooltip="Settings">settings</span>
         </div>
@@ -42,19 +43,45 @@
 <div class="main-container">
     <!-- SIDENAV -->
     <div class="sidenav" [class.collapsed]="!isSidebarOpen">
-        <mat-nav-list>
-            <a mat-list-item class="nav-link tooltip-hover" *ngFor="let nav of navItems"
-                [attr.data-tooltip]="!isSidebarOpen ? nav.label : null">
-                <span class="material-icons-outlined" matListIcon>{{ nav.icon }}</span>
-                <span class="nav-label" *ngIf="isSidebarOpen">{{ nav.label }}</span>
+        <mat-nav-list class="side-nav">
+            <a mat-list-item routerLink="/dashboard/" routerLinkActive="active-link">
+                <span class="material-icons-outlined nav-icon">lightbulb</span>
+                <span class="nav-text">Notes</span>
+            </a>
+            <a mat-list-item routerLink="/dashboard/reminders" routerLinkActive="active-link">
+                <span class="material-icons-outlined nav-icon">notifications</span>
+                <span class="nav-text">Reminders</span>
+            </a>
+            <div *ngFor="let label of labels">
+                <a mat-list-item>
+                    <span class="material-icons-outlined nav-icon">label</span>
+                    <span class="nav-text">{{label.labelName}}</span>
+                </a>
+            </div>
+            <a mat-list-item (click)="openDialog($event)">
+                <span class="material-icons-outlined nav-icon">edit</span>
+                <span class="nav-text">Edit labels</span>
+            </a>
+            <a mat-list-item routerLink="/dashboard/archive" routerLinkActive="active-link">
+                <span class="material-icons-outlined nav-icon">archive</span>
+                <span class="nav-text">Archive</span>
+            </a>
+            <a mat-list-item routerLink="/dashboard/trash" routerLinkActive="active-link">
+                <span class="material-icons-outlined nav-icon">delete</span>
+                <span class="nav-text">Bin</span>
             </a>
         </mat-nav-list>
     </div>
 
+    <app-modal [isVisible]="showModal" (close)="showModal = false">
+        <app-edit></app-edit>
+    </app-modal>
+
     <!-- MAIN CONTENT -->
-    <div class="content">
-        <app-create-note (noteCreated)="addNote($event)"></app-create-note>
-        <app-display-note [refreshTrigger]="refreshTrigger"></app-display-note>
+    <div class="content" [ngStyle]="{'margin-left': isSidebarOpen ? '0' : '0'}">
+        <!-- <app-notes></app-notes>
+        <app-archive></app-archive> -->
+        <router-outlet></router-outlet>
     </div>
-    <router-outlet></router-outlet>
+
 </div>

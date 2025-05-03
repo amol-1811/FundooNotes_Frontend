@@ -36,6 +36,10 @@ export class HttpService {
     return this.http.put(this.BASE_URL + endpoint, payload, {headers, params});
   }
 
+  put(endpoint: string, payload: string | null): Observable<any> {
+    return this.http.put(this.BASE_URL + endpoint, payload);
+  }
+
   deleteApi(endpoint: string, headers: HttpHeaders =new HttpHeaders()){
     return this.http.delete(this.BASE_URL + endpoint, {headers});
   }

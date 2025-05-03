@@ -1,0 +1,65 @@
+<!-- FIXED HEADER -->
+<mat-toolbar class="header-toolbar">
+    <!-- LEFT -->
+    <div class="left-section">
+        <button mat-icon-button (click)="drawer.toggle()" matTooltip="Main Menu">
+            <span class="material-icons-outlined">menu</span>
+        </button>
+        <img src="assets/keep.png" alt="Logo" class="logo" />
+        <span class="keep-title">Keep</span>
+    </div>
+
+    <!-- CENTER (Search) -->
+    <div class="search-section">
+        <span class="material-icons-outlined">search</span>
+        <input matInput placeholder="Search notes" [(ngModel)]="searchText" (input)="onSearchChange()" />
+        <span class="material-icons-outlined clear-icon" *ngIf="searchText" (click)="clearSearch()"
+            matTooltip="Clear">close</span>
+    </div>
+
+    
+    <!-- RIGHT -->
+    <div class="right-section">
+        <div class="icon-group">
+            <span class="material-icons-outlined icon" *ngIf="!isRefreshing" matTooltip="Refresh"
+                (click)="refreshNotes()">refresh</span>
+            <mat-spinner *ngIf="isRefreshing" diameter="24" strokeWidth="3" class="refresh-spinner"></mat-spinner>
+            <span class="material-icons-outlined icon" matTooltip="List view">view_agenda</span>
+            <span class="material-icons-outlined icon" matTooltip="Settings">settings</span>
+        </div>
+        <span class="spacer"></span>
+        <span class="material-icons-outlined icon" matTooltip="Google apps">apps</span>
+        <div class="account-container" (click)="toggleAccountMenu()">
+            <button mat-icon-button [matTooltip]="'Google Account'">
+                <span class="material-icons-outlined">account_circle</span>
+            </button>
+
+            <div class="logout-menu" *ngIf="isAccountMenuOpen">
+                <button class="logout-button" (click)="logout($event)">Logout</button>
+            </div>
+        </div>
+    </div>
+</mat-toolbar>
+
+<mat-drawer-container class="sidenav-container" autosize>
+    <mat-drawer #drawer class="sidenav" mode="side">
+        <mat-nav-list>
+            <a mat-list-item routerLink="/dashboard" routerLinkActive="active-link">
+                <span class="material-icons-outlined">note</span>
+                <span>Notes</span>
+            </a>
+            <a mat-list-item routerLink="/reminders" routerLinkActive="active-link">
+                <span class="material-icons-outlined">alarm</span>
+                <span>Reminders</span>
+            </a>
+            <a mat-list-item routerLink="/archive" routerLinkActive="active-link">
+                <span class="material-icons-outlined">archive</span>
+                <span>Archive</span>
+            </a>
+            <a mat-list-item routerLink="/trash" routerLinkActive="active-link">
+                <span class="material-icons-outlined">delete</span>
+                <span>Trash</span>
+            </a>
+        </mat-nav-list>
+    </mat-drawer>
+</mat-drawer-container>

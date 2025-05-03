@@ -1,17 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Material+Icons+Outlined');
-
-.notes-container {
-    margin-top: 16px;
-    position: relative;
-    max-width: 1200px;
-    margin: 16px auto;
-    padding: 0 16px;
-    overflow: hidden;
+.reminder-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
-.menu-item {
+.notes-container {
     display: flex;
-    justify-content: space-between;
+    flex-wrap: wrap;
+    justify-content: space-around;
 }
 
 .empty-notes {
@@ -48,12 +45,24 @@
     padding: 16px 0;
 }
 
+
+.reminder-badge {
+    background-color: #eee;
+    opacity: 0.4;
+    padding: 2px 6px;
+    width: fit-content;
+    border-radius: 10px;
+    color: #000;
+}
+
 .note-card {
     background-color: #fff;
     border-radius: 8px;
     border: 1px solid #e0e0e0;
     padding: 16px;
+    margin: 10px;
     min-height: 100px;
+    width: 300px;
     transition: box-shadow 0.2s;
     cursor: pointer;
     position: relative;

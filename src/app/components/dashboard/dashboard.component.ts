@@ -1,41 +1,98 @@
-import { Component, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, ViewChild } from '@angular/core';
+import { 
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogActions,
+  MatDialogClose,
+  MatDialogContent,
+  MatDialogRef,
+  MatDialogTitle,
+  
+ } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { DisplayNoteComponent } from '../notes/display-note/display-note.component';
+import { EditComponent } from '../notes/edit/edit.component';
+import { NoteService } from 'src/app/services/note/note.service';
+import { LabelService } from 'src/app/services/label/label.service';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardComponent {
-  @ViewChild(DisplayNoteComponent) displayNoteComponent!: DisplayNoteComponent;
-  refreshTrigger: number = 0;
+  
+  showModal: boolean = false;
+
   searchText: string = '';
+  isRefreshing: boolean = false;
   isAccountMenuOpen: boolean = false;
+  labels: any[] = [];
+  //readonly dialog = inject(MatDialog);
+
   onSearchChange() {}
   clearSearch() {
     this.searchText = '';
   }
   isSidebarOpen = true;
-  navItems = [
-    { icon: 'lightbulb', label: 'Notes' },
-    { icon: 'notifications', label: 'Reminders' },
-    { icon: 'edit', label: 'Edit Labels' },
-    { icon: 'archive', label: 'Archive' },
-    { icon: 'delete', label: 'Bin' },
-  ];
   showTooltip: any;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, 
+              private noteService: NoteService, 
+              private labelService: LabelService, 
+              private dialog: MatDialog) {}
 
   ngOnInit(): void {
-    document.addEventListener('click', this.handleClickOutside.bind(this));
+    // document.addEventListener('click', this.handleClickOutside.bind(this));
+    // this.checkScreenSize();
+    // window.addEventListener('resize', this.checkScreenSize.bind(this));
+    this.labelService.getAllLabels()
+      .subscribe({
+        next: (response) => {
+          this.labels = response.data;
+        },
+
+        error: (err) => {
+          console.log(err);
+        }
+      })
+
   } 
+
+  ngOnDestroy(): void {
+    // document.removeEventListener('click', this.handleClickOutside.bind(this));
+    // window.removeEventListener('resize', this.checkScreenSize.bind(this));
+  }
+
+  checkScreenSize(): void {
+    if (window.innerWidth <= 600) {
+      this.isSidebarOpen = false;
+    }
+  }
+
+  refreshNotes(): void {
+    //this.isRefreshing = true;
+    //this.refreshTriggered.emit();
+    this.isRefreshing = true;
+    this.noteService.getAllNotes()
+    .subscribe({
+      next: (val) => {
+        this.isRefreshing = false;
+      },
+
+      error: (err) => {
+        this.isRefreshing = false;
+      }
+    })
+  }
 
   handleClickOutside(event: MouseEvent): void {
     const target = event.target as HTMLElement;
     if (!target.closest('.right-section')) {
       this.isAccountMenuOpen = false;
+    }
+    if (window.innerWidth <= 600 && !target.closest('.sidenav') && !target.closest('button[matTooltip="Main Menu"]')) {
+      this.isSidebarOpen = false;
     }
   }
 
@@ -53,19 +110,10 @@ export class DashboardComponent {
     this.router.navigate(['/login']);
   }
 
-  refreshNotes() {
-    if (this.displayNoteComponent) {
-      console.log('Refreshing notes via ViewChild...');
-      this.displayNoteComponent.getallNotes();
-    } else {
-      console.log('DisplayNoteComponent not accessible via ViewChild, using refresh trigger...');
-      this.refreshTrigger++;
-    }
-  }
+  
 
-  allNotes: any[] = [];
-  addNote(note: any) {
-    console.log('Note added:', note);
-    this.refreshNotes();
+  openDialog($event: Event): void {
+    
+    this.showModal = true;
   }
 }

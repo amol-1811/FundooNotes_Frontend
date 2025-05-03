@@ -9,6 +9,7 @@ import {
   SimpleChanges,
   OnChanges,
 } from '@angular/core';
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { NoteService } from 'src/app/services/note/note.service';
 
 @Component({
@@ -18,12 +19,13 @@ import { NoteService } from 'src/app/services/note/note.service';
 })
 export class DisplayNoteComponent implements OnInit, OnChanges {
   @Output() noteColorChanged = new EventEmitter<any>();
-  @Input() refreshTrigger: number = 0; // Trigger to refresh notes
+  @Input() refreshTrigger: number = 0;
+  @Input() notes: any[] = [];
 
-  notes: any[] = [];
   activeColorPalette: number | null = null;
   selectedNote: any = null;
   selectedNotes: Set<number> = new Set();
+  dateObj: any = null;
   colorOptions: string[] = [
     '#ffffff', // white
     '#f28b82', // red
@@ -38,58 +40,114 @@ export class DisplayNoteComponent implements OnInit, OnChanges {
     '#e8eaed', // gray
   ];
 
-  constructor(private noteService: NoteService) {}
-  
-  ngOnInit() {
-    this.getallNotes();
-  }
+  constructor(private noteService: NoteService) {
+    const date = new Date(new Date().getTime() + 5 * 60 * 60 * 1000);
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['refreshTrigger'] && !changes['refreshTrigger'].firstChange) {
-      this.getallNotes();
-    }
-  }
-
-  getallNotes() {
-    console.log('Fetching all notes...');
-    this.noteService.getAllNotes().subscribe({
-      next: (response: any) => {
-        console.log('Raw API response:', response);
-
-        if (Array.isArray(response)) {
-          this.notes = response;
-        } else if (response && response.data && Array.isArray(response.data)) {
-          this.notes = response.data;
-        } else if (response && typeof response === 'object') {
-          const possibleNotesArray = Object.values(response).find((val) =>
-            Array.isArray(val)
-          );
-          if (possibleNotesArray && Array.isArray(possibleNotesArray)) {
-            this.notes = possibleNotesArray;
-          } else {
-            // If nothing else worked, initialize as empty array
-            console.warn('Could not find notes array in response', response);
-            this.notes = [];
-          }
-        } else {
-          console.warn('Unexpected response format:', response);
-          this.notes = [];
-        }
-        console.log('Processed notes:', this.notes);
-        if (this.notes.length === 0) {
-          console.log('No notes found in the response.');
-        }
+    this.dateObj = {
+      date: date,
+      today: date.getHours() + ':' + '00',
+      tomorrowDate: new Date(date.getTime() + 24 * 60 * 60 * 1000),
+      tomorrow:
+        new Date(date.getTime() + 27 * 60 * 60 * 1000).getHours() + ':' + '00',
+      nextWeek: {
+        date: new Date(
+          date.getTime() + (7 - date.getDay() + 1) * 24 * 60 * 60 * 1000
+        ),
+        day: new Date(
+          date.getTime() + (7 - date.getDay() + 1) * 24 * 60 * 60 * 1000
+        )
+          .toDateString()
+          .split(' ')[0],
+        time:
+          new Date(
+            date.getTime() + (7 - date.getDay() + 1) * 24 * 60 * 60 * 1000
+          ).getHours() +
+          ':' +
+          '00',
       },
-      error: (error) => {
-        console.error('Error fetching notes:', error);
+    };
+  }
+
+  dateChangeEvent(note: any, event: MatDatepickerInputEvent<Date>) {
+    console.log(event.target?.value);
+    this.changeReminder(note, event.target?.value, 'Future');
+  }
+
+  removeReminder(note: any) {
+    this.changeReminder(note, null, 'Today');
+  }
+
+  changeReminder(note: any, date: any, when: string) {
+    note.reminder = date;
+    console.log('Updating the reminder for ', when, 'for date ', date);
+    this.noteService.updateNote(note).subscribe({
+      next: (val) => {
+        console.log(val);
+      },
+
+      error: (err) => {
+        console.log(err);
       },
     });
   }
 
+  ngOnInit() {
+    //this.getallNotes();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['refreshTrigger'] && !changes['refreshTrigger'].firstChange) {
+      //this.getallNotes();
+    }
+  }
+
+  archiveNoteList: any[] = [];
+
+  // getallNotes() {
+  //   console.log('Fetching all notes...');
+  //   this.noteService.getAllNotes().subscribe({
+  //     next: (response: any) => {
+  //       console.log('Raw API response:', response);
+
+  //       if (Array.isArray(response)) {
+  //         console.log("inside array");
+  //         this.notes = response.filter(f=> f.isArchive === false);
+  //         this.archiveNoteList = response.filter(f=> f.isArchive === true);
+  //       } else if (response && response.data && Array.isArray(response.data)) {
+  //         console.log("inside response data");
+  //         this.notes = response.data.filter((f: { isArchive: boolean; })=> f.isArchive === false);
+  //         this.archiveNoteList = response.data.filter((f: { isArchive: boolean; })=> f.isArchive === true);
+  //       } else if (response && typeof response === 'object') {
+  //         console.log("inside response typeof");
+  //         const possibleNotesArray = Object.values(response).find((val) =>
+  //           Array.isArray(val)
+  //         );
+  //         if (possibleNotesArray && Array.isArray(possibleNotesArray)) {
+  //           this.notes = possibleNotesArray;
+  //         } else {
+  //           // If nothing else worked, initialize as empty array
+  //           console.warn('Could not find notes array in response', response);
+  //           this.notes = [];
+  //         }
+  //       } else {
+  //         console.warn('Unexpected response format:', response);
+  //         this.notes = [];
+  //       }
+  //       console.log('Processed notes:', this.notes);
+  //       if (this.notes.length === 0) {
+  //         console.log('No notes found in the response.');
+  //       }
+  //     },
+  //     error: (error) => {
+  //       console.error('Error fetching notes:', error);
+  //     },
+  //   });
+  // }
+
   selectNote(noteId: any, event: Event) {
     // Handle note selection (checkbox)
     event.stopPropagation();
-    
+
     if (this.selectedNotes.has(noteId)) {
       this.selectedNotes.delete(noteId);
     } else {
@@ -113,27 +171,27 @@ export class DisplayNoteComponent implements OnInit, OnChanges {
   }
 
   toggleColorPalette(noteId: any, event: MouseEvent): void {
+    console.log(noteId);
     event.stopPropagation();
-    this.activeColorPalette = this.activeColorPalette === noteId ? null : noteId;
+    this.activeColorPalette =
+      this.activeColorPalette === noteId ? null : noteId;
+
+    //this.changeNoteColor(noteId, , event);
   }
 
   changeNoteColor(note: any, color: string, event: Event) {
     event.stopPropagation();
-    
-    // Get the note ID from the note object
-    const noteId = note.id;
-    
-    console.log('Changing color for note with ID:', noteId);
-    
+
+    const noteId = note.notesId;
+
     const payload = {
-      noteId: noteId,  // This will be sent as "notesId" in the service
+      noteId: noteId,
       Color: color,
     };
-    
+
     this.noteService.updateNoteColor(payload).subscribe({
       next: (response) => {
         console.log('Note color updated successfully:', response);
-        // Update the note color in the local array
         note.color = color;
         this.noteColorChanged.emit(note);
       },
@@ -141,19 +199,21 @@ export class DisplayNoteComponent implements OnInit, OnChanges {
         console.error('Error updating note color:', error);
       },
     });
-    
+
     this.activeColorPalette = null;
   }
 
   togglePin(note: any, event: Event): void {
     event.stopPropagation();
     const noteId = note.id || note.noteId;
-    
-    const noteToUpdate = this.notes.find(n => n.id === noteId || n.noteId === noteId);
+
+    const noteToUpdate = this.notes.find(
+      (n) => n.id === noteId || n.noteId === noteId
+    );
     if (noteToUpdate) {
       noteToUpdate.isPinned = !noteToUpdate.isPinned;
     }
-    
+
     this.noteService.togglePin(noteId).subscribe({
       next: (response) => {
         console.log('Note pin status updated:', response);
@@ -167,6 +227,54 @@ export class DisplayNoteComponent implements OnInit, OnChanges {
     });
   }
 
+  archiveNote(note: any, event: Event): void {
+    console.log('Archiving note:', note);
+    event.stopPropagation();
+    const noteId = note.notesId || note.noteId;
+
+    this.noteService.ArchiveNote(noteId).subscribe({
+      next: (response) => {
+        console.log('Note archived successfully:', response);
+        this.notes = this.notes.filter((n) => n.notesId !== noteId);
+        //this.getallNotes();
+      },
+      error: (error) => {
+        console.error('Error archiving note:', error);
+      },
+    });
+  }
+
+  trashNote(note: any, event: Event): void {
+    console.log('Trashing note:', note);
+    event.stopPropagation();
+    const noteId = note.notesId || note.noteId;
+
+    this.noteService.TrashNote(noteId).subscribe({
+      next: (response) => {
+        console.log('Note trashed successfully:', response);
+        this.notes = this.notes.filter((n) => n.notesId !== noteId);
+        //this.getallNotes();
+      },
+      error: (error) => {
+        console.error('Error trashing note:', error);
+      },
+    });
+  }
+
+  addReminder(note: any, event: Event): void {
+    event.stopPropagation();
+    const noteId = note.notesId || note.noteId;
+
+    this.noteService.AddReminder(noteId).subscribe({
+      next: (response) => {
+        this.notes = this.notes.filter((n) => n.notesId !== noteId);
+      },
+      error: (error) => {
+        console.error('Error Reminder note:', error);
+      },
+    });
+  }
+
   // Close color palette when clicking outside
   @HostListener('document:click', ['$event'])
   onClickOutside(event: Event) {
@@ -174,7 +282,7 @@ export class DisplayNoteComponent implements OnInit, OnChanges {
     if (
       !target.closest('.color-palette') &&
       !target.closest('[matTooltip="Background options"]') &&
-      !target.closest('.color-option') 
+      !target.closest('.color-option')
     ) {
       this.activeColorPalette = null;
     }

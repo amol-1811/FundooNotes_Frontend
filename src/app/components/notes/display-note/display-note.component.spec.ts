@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { DisplayNoteComponent } from './display-note.component';
 
 describe('DisplayNoteComponent', () => {
