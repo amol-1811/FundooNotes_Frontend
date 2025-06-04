@@ -1,1 +1,4 @@
-<app-display-note [refreshTrigger]="refreshTrigger" [notes]="trashNoteList"></app-display-note>
+<app-display-note *ngIf="!isLoading && trashNoteList.length > 0" [refreshTrigger]="refreshTrigger" [notes]="trashNoteList"></app-display-note>
+<div class="spinner" *ngIf="isLoading">
+    <mat-spinner strokeWidth="3"></mat-spinner>
+</div>

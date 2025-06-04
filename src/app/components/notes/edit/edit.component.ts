@@ -35,6 +35,9 @@ export class EditComponent implements OnInit {
 
   addLabel() {
     console.log("labelText", this.labelText);
+    if(this.labelText === null || this.labelText === undefined || this.labelText === ''){
+      return;
+    }
 
     this.labelService.addLabel(this.labelText)
     .subscribe({

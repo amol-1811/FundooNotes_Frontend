@@ -2,9 +2,12 @@
     <div>
         <app-create-note></app-create-note>
     </div>
-    
+    <div class="spinner" *ngIf="isLoading">
+        <mat-spinner strokeWidth="3"></mat-spinner>
+    </div>
+
     <div class="reminder-container">
-        
+
         <div class="notes-container">
             <div *ngIf="reminderNotes.length === 0" class="empty-notes">
                 <div class="light-bulb-icon">
@@ -32,8 +35,9 @@
                 <div class="note-body">{{ note.description }}</div>
                 <div *ngIf="note.reminder !== null">
                     <mat-chip>
-                        {{note.reminder | date:'medium' }} 
-                        <mat-icon style="height: 20px; cursor: pointer;" (click)="removeReminder(note, $event)">close</mat-icon>
+                        {{note.reminder | date:'medium' }}
+                        <mat-icon style="height: 20px; cursor: pointer;"
+                            (click)="removeReminder(note, $event)">close</mat-icon>
                     </mat-chip>
                 </div>
                 <div class="note-actions">

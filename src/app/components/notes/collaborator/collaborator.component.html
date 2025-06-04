@@ -1,0 +1,22 @@
+<div class="collab-container">
+    <h3>Add Collaborators</h3>
+    <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Enter email</mat-label>
+        <input matInput placeholder="Collaborator's email" [(ngModel)]="Email" />
+    </mat-form-field>
+
+    <div class="collab-actions">
+        <button mat-flat-button color="primary" (click)="addCollaborator(noteId)">Add</button>
+        <button mat-stroked-button color="warn" (click)="close()">Cancel</button>
+    </div>
+
+    <div *ngIf="collaborators.length > 0">
+        <h4>Added Collaborators:</h4>
+        <ul>
+            <li *ngFor="let collab of collaborators">
+                {{ collab?.email }}
+                <mat-icon class="remove-icon" (click)="removeCollaborator(noteId, collab?.email)">close</mat-icon>
+            </li>
+        </ul>
+    </div>
+</div>

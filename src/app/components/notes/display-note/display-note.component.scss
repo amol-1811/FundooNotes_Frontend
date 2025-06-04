@@ -48,9 +48,16 @@
     padding: 16px 0;
 }
 
+.notes-list {
+    display: list-item;
+    list-style: none;
+    padding: 16px 0;
+}
+
 .note-card {
     background-color: #fff;
     border-radius: 8px;
+    margin-top: 5px;
     border: 1px solid #e0e0e0;
     padding: 16px;
     min-height: 100px;

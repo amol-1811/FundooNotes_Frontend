@@ -8,6 +8,7 @@ import { ArchiveComponent } from './components/archive/archive.component';
 import { NotesComponent } from './components/notes/notes/notes.component';
 import { TrashComponent } from './components/trash/trash.component';
 import { ReminderComponent } from './components/reminder/reminder.component';
+import { LabelNotesComponent } from './components/label-notes/label-notes.component';
 
 const routes: Routes = [
   { path: 'register', component: RegisterComponent },
@@ -21,6 +22,7 @@ const routes: Routes = [
       { path: '', pathMatch: 'full', component: NotesComponent },
       { path: 'trash', pathMatch: 'full', component: TrashComponent },
       { path: 'reminders', pathMatch: 'full', component: ReminderComponent },
+      { path: 'label/:labelId', component: LabelNotesComponent },
     ],
   },
 

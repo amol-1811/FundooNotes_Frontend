@@ -1,2 +1,6 @@
 <!-- <app-header></app-header> -->
-<app-display-note [refreshTrigger]="refreshTrigger" [notes]="archiveNoteList"></app-display-note>
+<app-display-note *ngIf="!isLoading" [refreshTrigger]="refreshTrigger" [notes]="archiveNoteList"></app-display-note>
+
+<div class="spinner" *ngIf="isLoading">
+    <mat-spinner strokeWidth="3"></mat-spinner>
+</div>

@@ -12,17 +12,28 @@ export class ArchiveComponent implements OnInit {
   refreshTrigger: number = 0;
   archiveNoteList: any[] = [];
 
-  constructor(private noteService: NoteService) {}
+  isLoading: boolean;
+
+  constructor(private noteService: NoteService) {
+    this.isLoading = false;
+  }
 
   ngOnInit() {
     this.getAllArchivedNotes();
   }
 
+  switchLoadingState() {
+    this.isLoading = !this.isLoading;
+  }
+
   getAllArchivedNotes() {
-    console.log('Fetching all notes...');
+    this.switchLoadingState();
+
+    console.log('Fetching archieve notes...');
     this.noteService.getAllNotes().subscribe({
       next: (response: any) => {
         console.log('Raw API response:', response);
+        
 
         if (Array.isArray(response)) {
           console.log('inside array');
@@ -54,9 +65,11 @@ export class ArchiveComponent implements OnInit {
         if (this.archiveNoteList.length === 0) {
           console.log('No notes found in the response.');
         }
+        this.switchLoadingState()
       },
       error: (error) => {
         console.error('Error fetching notes:', error);
+        this.switchLoadingState();
       },
     });
   }

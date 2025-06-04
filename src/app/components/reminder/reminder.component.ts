@@ -12,6 +12,8 @@ export class ReminderComponent {
   activeColorPalette: number | null = null;
   selectedNote: any = null;
   selectedNotes: Set<number> = new Set();
+  isLoading: boolean;
+
   colorOptions: string[] = [
     '#ffffff', // white
     '#f28b82', // red
@@ -26,7 +28,9 @@ export class ReminderComponent {
     '#e8eaed', // gray
   ];
 
-  constructor(private noteService: NoteService) {}
+  constructor(private noteService: NoteService) {
+    this.isLoading = false;
+  }
 
   markAsDone(note: any, event: Event) {
     this.reminderNotes = this.reminderNotes.filter(n => n.notesId !== note.notesId);
@@ -62,6 +66,10 @@ export class ReminderComponent {
         console.log(err);
       },
     });
+  }
+
+  switchLoadingState() {
+    this.isLoading = !this.isLoading;
   }
 
   openNoteDetail(note: any) {

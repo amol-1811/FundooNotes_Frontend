@@ -56,6 +56,11 @@ export class NoteService {
     return this.httpService.putApi(`/trashnotes?noteId=${noteId}`, {}, headers);
   }
 
+  DeleteNote(noteId: number): Observable<any> {
+    const headers = this.httpService.getHeader();
+    return this.httpService.deleteApi(`/deletenote?noteId=${noteId}`, headers);
+  }
+
   AddReminder(data: {noteId: number, Reminder: Date}): Observable<any> {
     const headers = this.httpService.getHeader();
     const payload = {
@@ -63,5 +68,20 @@ export class NoteService {
       Reminder: data.Reminder
     }
     return this.httpService.putApi('/addreminder', payload, headers)
+  }
+
+  GetAllCollaborator(noteId: number): Observable<any> {
+    const headers = this.httpService.getHeader();
+    return this.httpService.getApi(`/getcollaborator?noteId=${noteId}`, headers);
+  }
+
+  AddCollaborator(noteId: number, Email: string): Observable<any> {
+    const headers = this.httpService.getHeader();
+    return this.httpService.putApi(`/addcollaborator?noteId=${noteId}&Email=${Email}`, {}, headers);
+  }
+
+  RemoveCollaborator(noteId: number, Email: string): Observable<any> {
+    const headers = this.httpService.getHeader();
+    return this.httpService.deleteApi(`/removecollaborator?noteId=${noteId}&Email=${Email}`, headers);
   }
 }

@@ -1,0 +1,28 @@
+
+<!-- label-notes.component.html -->
+<div class="label-notes-container">
+  <div class="label-header" *ngIf="labelName">
+    <h2 class="label-title">
+      <span class="material-icons-outlined">label</span>
+      {{ labelName }}
+    </h2>
+    <p class="notes-count">{{ filteredNotes.length }} note{{ filteredNotes.length !== 1 ? 's' : '' }}</p>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner strokeWidth="3"></mat-spinner>
+    <p>Loading notes...</p>
+  </div>
+
+  <div *ngIf="!isLoading && filteredNotes.length === 0" class="empty-notes">
+    <div class="empty-icon">
+    <p *ngIf="searchText">No notes found matching "{{ searchText }}"</p>
+  </div>
+
+  <div *ngIf="!isLoading && filteredNotes.length > 0">
+    <app-display-note 
+      [notes]="filteredNotes" 
+      (noteColorChanged)="onNoteColorChanged($event)">
+    </app-display-note>
+  </div>
+</div>

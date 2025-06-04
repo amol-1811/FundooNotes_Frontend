@@ -1,2 +1,5 @@
 <app-create-note (noteCreated)="addNote($event)"></app-create-note>
-<app-display-note [refreshTrigger]="refreshTrigger" [notes]="notes"></app-display-note>
+<app-display-note *ngIf="!isLoading" [refreshTrigger]="refreshTrigger" [notes]="filteredNotes"></app-display-note>
+<div class="spinner" *ngIf="isLoading">
+    <mat-spinner strokeWidth="3"></mat-spinner>
+</div>

@@ -14,6 +14,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -43,6 +44,8 @@ import { EditComponent } from './components/notes/edit/edit.component';
 import { OverlayRef } from '@angular/cdk/overlay';
 import { ReminderComponent } from './components/reminder/reminder.component';
 import { ModalComponent } from './components/modal/modal.component';
+import { CollaboratorComponent } from './components/notes/collaborator/collaborator.component';
+import { LabelNotesComponent } from './components/label-notes/label-notes.component';
 
 @NgModule({
   declarations: [
@@ -59,6 +62,8 @@ import { ModalComponent } from './components/modal/modal.component';
     EditComponent,
     ReminderComponent,
     ModalComponent,
+    CollaboratorComponent,
+    LabelNotesComponent
   ],
   imports: [
     BrowserModule,
@@ -72,6 +77,7 @@ import { ModalComponent } from './components/modal/modal.component';
     MatDatepickerModule,
     MatNativeDateModule,
     MatSelectModule,
+    MatCheckboxModule,
     MatIconModule,
     MatMenuModule,
     MatSnackBarModule,

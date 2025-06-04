@@ -40,7 +40,7 @@ export class HttpService {
     return this.http.put(this.BASE_URL + endpoint, payload);
   }
 
-  deleteApi(endpoint: string, headers: HttpHeaders =new HttpHeaders()){
+  deleteApi(endpoint: string, headers: HttpHeaders = new HttpHeaders()){
     return this.http.delete(this.BASE_URL + endpoint, {headers});
   }
 }

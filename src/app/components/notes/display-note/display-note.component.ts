@@ -8,9 +8,12 @@ import {
   OnInit,
   SimpleChanges,
   OnChanges,
+  ViewChild,
 } from '@angular/core';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { LabelService } from 'src/app/services/label/label.service';
 import { NoteService } from 'src/app/services/note/note.service';
+import { ViewService } from 'src/app/services/view/view.service';
 
 @Component({
   selector: 'app-display-note',
@@ -18,14 +21,23 @@ import { NoteService } from 'src/app/services/note/note.service';
   styleUrls: ['./display-note.component.scss'],
 })
 export class DisplayNoteComponent implements OnInit, OnChanges {
+
   @Output() noteColorChanged = new EventEmitter<any>();
   @Input() refreshTrigger: number = 0;
-  @Input() notes: any[] = [];
+  @Input() notes!: any[];
+
+  showCollaboratorModal: boolean = false;
 
   activeColorPalette: number | null = null;
   selectedNote: any = null;
   selectedNotes: Set<number> = new Set();
   dateObj: any = null;
+  activeCollaboratorNote: any = null;
+  allLabels: any[] = [];
+  showAssignLabelModal: boolean = false;
+
+  isGridView: boolean = true;
+
   colorOptions: string[] = [
     '#ffffff', // white
     '#f28b82', // red
@@ -40,7 +52,8 @@ export class DisplayNoteComponent implements OnInit, OnChanges {
     '#e8eaed', // gray
   ];
 
-  constructor(private noteService: NoteService) {
+  constructor(private noteService: NoteService, private labelService: LabelService, private viewService: ViewService) {
+    this.checkIfViewChanged()
     const date = new Date(new Date().getTime() + 5 * 60 * 60 * 1000);
 
     this.dateObj = {
@@ -66,6 +79,19 @@ export class DisplayNoteComponent implements OnInit, OnChanges {
           '00',
       },
     };
+
+    this.labelService.getAllLabels().subscribe({
+      next: val => {
+        this.allLabels = val?.data;
+      },
+      error: err => {
+        console.log(err);
+      }
+    })
+  }
+ 
+  openAssignLabelModal() {
+    this.showAssignLabelModal = true;
   }
 
   dateChangeEvent(note: any, event: MatDatepickerInputEvent<Date>) {
@@ -92,10 +118,12 @@ export class DisplayNoteComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
-    //this.getallNotes();
+    
   }
 
   ngOnChanges(changes: SimpleChanges) {
+    console.log(changes);
+
     if (changes['refreshTrigger'] && !changes['refreshTrigger'].firstChange) {
       //this.getallNotes();
     }
@@ -153,6 +181,13 @@ export class DisplayNoteComponent implements OnInit, OnChanges {
     } else {
       this.selectedNotes.add(noteId);
     }
+  }
+
+  checkIfViewChanged() {
+    setInterval(() => {
+      console.log("checking if grid value changed");
+      this.isGridView = this.viewService.isGridView;
+    }, 1000);
   }
 
   openNoteDetail(note: any) {
@@ -261,6 +296,23 @@ export class DisplayNoteComponent implements OnInit, OnChanges {
     });
   }
 
+  deleteNote(note: any, event: Event): void {
+    console.log('Trashing note:', note);
+    event.stopPropagation();
+    const noteId = note.notesId || note.noteId;
+
+    this.noteService.DeleteNote(noteId).subscribe({
+      next: (response) => {
+        console.log('Note deleted successfully:', response);
+        this.notes = this.notes.filter((n) => n.notesId !== noteId);
+        //this.getallNotes();
+      },
+      error: (error) => {
+        console.error('Error deleting note:', error);
+      },
+    });
+  }
+
   addReminder(note: any, event: Event): void {
     event.stopPropagation();
     const noteId = note.notesId || note.noteId;
@@ -274,6 +326,43 @@ export class DisplayNoteComponent implements OnInit, OnChanges {
       },
     });
   }
+
+  openCollaboratorModal(note: any, event: Event) {
+    event.stopPropagation();
+    this.activeCollaboratorNote = note;
+    this.showCollaboratorModal = true;
+  }
+
+  closeCollaboratorModal() {
+    this.activeCollaboratorNote = null;
+  }
+
+  updateCollaborators(updatedList: string[]) {
+    if (this.activeCollaboratorNote) {
+      this.activeCollaboratorNote.collaborators = updatedList;
+      // Optional: Call backend service to persist changes
+    }
+  }
+
+  assignLabelToNote(note: any, label: any, event: Event): void {
+  //event.stopPropagation();
+
+  const noteId = note.notesId || note.noteId;
+  const labelId = label.id || label.labelId;
+
+  this.labelService.assignLabel(noteId, labelId).subscribe({
+    next: (response) => {
+      console.log('Label assigned successfully:', response);
+      if (!note.labels) {
+        note.labels = [];
+      }
+      note.labels.push(label);
+    },
+    error: (error) => {
+      console.error('Error assigning label to note:', error);
+    },
+  });
+}
 
   // Close color palette when clicking outside
   @HostListener('document:click', ['$event'])

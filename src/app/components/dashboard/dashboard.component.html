@@ -4,14 +4,14 @@
         <button mat-icon-button (click)="toggleSidebar()" matTooltip="Main Menu">
             <span class="material-icons-outlined">menu</span>
         </button>
-        <img src="assets/keep.png" alt="Logo" class="logo" />
-        <span class="keep-title">Keep</span>
+        <img *ngIf="headerTitle === 'Keep'" src="assets/keep.png" alt="Logo" class="logo" />
+        <span class="keep-title">{{headerTitle}}</span>
     </div>
 
     <!-- CENTER (Search) -->
     <div class="search-section">
         <span class="material-icons-outlined">search</span>
-        <input matInput placeholder="Search notes" [(ngModel)]="searchText" (input)="onSearchChange()" />
+        <input matInput placeholder="Search notes" [(ngModel)]="searchText" (input)="onSearch()" />
         <span class="material-icons-outlined clear-icon" *ngIf="searchText" (click)="clearSearch()"
             matTooltip="Clear">close</span>
     </div>
@@ -22,7 +22,8 @@
             <span *ngIf="!isRefreshing" class="material-icons-outlined icon" (click)="refreshNotes()"
                 matTooltip="Refresh">refresh</span>
             <mat-spinner *ngIf="isRefreshing" diameter="24" strokeWidth="3" class="refresh-spinner"></mat-spinner>
-            <span class="material-icons-outlined icon" matTooltip="List view">view_agenda</span>
+            <span class="material-icons-outlined icon" *ngIf="!isGridView" matTooltip="List view" (click)="switchView()">view_agenda</span>
+            <span class="material-icons-outlined icon" *ngIf="isGridView" matTooltip="Grid view" (click)="switchView()">view_comfy_alt</span>
             <span class="material-icons-outlined icon" matTooltip="Settings">settings</span>
         </div>
         <span class="spacer"></span>
@@ -53,7 +54,7 @@
                 <span class="nav-text">Reminders</span>
             </a>
             <div *ngFor="let label of labels">
-                <a mat-list-item>
+                <a mat-list-item [routerLink]="['/dashboard/label', label.id || label.labelId]" routerLinkActive="active-link">
                     <span class="material-icons-outlined nav-icon">label</span>
                     <span class="nav-text">{{label.labelName}}</span>
                 </a>

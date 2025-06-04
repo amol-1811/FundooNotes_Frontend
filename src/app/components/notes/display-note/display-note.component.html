@@ -7,7 +7,7 @@
         <p>Notes that you add appear here</p>
     </div>
 
-    <div class="notes-grid">
+    <div [class]="isGridView ? 'notes-grid' : 'notes-list' ">
         <div *ngFor="let note of notes" class="note-card" [style.backgroundColor]="note.color"
             [class.selected]="selectedNotes.has(note)" (click)="openNoteDetail(note)">
             <!-- <div *ngIf="!note.isArchive || false" class="note-card" [style.backgroundColor]="note.color"
@@ -27,7 +27,7 @@
 
             <div *ngIf="note.reminder !== null">
                 <mat-chip>
-                    {{note.reminder | date:'medium' }} 
+                    {{note.reminder | date:'medium' }}
                     <mat-icon style="height: 20px; cursor: pointer;" (click)="removeReminder(note)">close</mat-icon>
                 </mat-chip>
             </div>
@@ -60,7 +60,7 @@
                         <span>Next Week</span>
                         <span style="margin-left: 40px;">{{dateObj.nextWeek.day}} {{dateObj.nextWeek.time}}</span>
                     </button>
-                    <mat-form-field class="full-width" style="margin-left: 5px; margin-right: 5px; " >
+                    <mat-form-field class="full-width" style="margin-left: 5px; margin-right: 5px; ">
                         <mat-label>Select Reminder Date</mat-label>
                         <input matInput [matDatepicker]="picker" (dateChange)="dateChangeEvent(note, $event)">
                         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
@@ -69,7 +69,7 @@
                 </mat-menu>
 
                 <button *ngIf="!note.isTrash" mat-icon-button matTooltip="Collaborator"
-                    (click)="$event.stopPropagation()">
+                    (click)="openCollaboratorModal(note, $event)">
                     <span class="material-icons-outlined">person_add</span>
                 </button>
                 <button *ngIf="!note.isTrash" mat-icon-button matTooltip="Add image" (click)="$event.stopPropagation()">
@@ -83,20 +83,29 @@
                     (click)="archiveNote(note, $event)">
                     <span class="material-icons-outlined">unarchive</span>
                 </button>
-                <button *ngIf="!note.isTrash && !note.isArchive" mat-icon-button matTooltip="trash"
+                <!-- <button *ngIf="!note.isTrash && !note.isArchive" mat-icon-button matTooltip="trash"
                     (click)="trashNote(note, $event)">
                     <span class="material-icons-outlined">delete</span>
-                </button>
+                </button> -->
                 <button *ngIf="note.isTrash" mat-icon-button matTooltip="delete Forever"
-                    (click)="trashNote(note, $event)">
+                    (click)="deleteNote(note, $event)">
                     <span class="material-icons-outlined">delete_forever</span>
                 </button>
                 <button *ngIf="note.isTrash" mat-icon-button matTooltip="restore" (click)="trashNote(note, $event)">
                     <span class="material-icons-outlined">restore</span>
                 </button>
-                <button *ngIf="!note.isTrash" mat-icon-button matTooltip="More" (click)="$event.stopPropagation()">
+                <button *ngIf="!note.isTrash" mat-icon-button matTooltip="More" [matMenuTriggerFor]="moreMenu"
+                    (click)="$event.stopPropagation()">
                     <span class="material-icons-outlined">more_vert</span>
                 </button>
+                <mat-menu #moreMenu="matMenu">
+                    <button mat-menu-item (click)="openAssignLabelModal()">
+                        <span>Assign Label</span>
+                    </button>
+                    <button mat-menu-item (click)="trashNote(note, $event)">
+                        <span>Delete</span>
+                    </button>
+                </mat-menu>
             </div>
 
             <!-- Color palette for each note -->
@@ -113,48 +122,17 @@
     </div>
 </div>
 
-<!-- Note Detail Overlay -->
-<!-- <div *ngIf="selectedNote" class="note-detail-overlay">
-    <div class="overlay-backdrop" (click)="closeNoteDetail()"></div>
-    <div class="note-detail-container" [style.backgroundColor]="selectedNote.color">
-        <div class="note-detail-header">
-            <input class="note-detail-title" [(ngModel)]="selectedNote.title" placeholder="Title">
-            <button mat-icon-button class="pin-icon" (click)="togglePin(selectedNote, $event)">
-                <span class="material-icons-outlined">{{ selectedNote.isPinned ? 'push_pin' : 'push_pin' }}</span>
-            </button>
-        </div>
-        <textarea class="note-detail-body" [(ngModel)]="selectedNote.content" placeholder="Take a note..."></textarea>
-        <div class="note-actions visible">
-            <button mat-icon-button matTooltip="Background options" (click)="toggleColorPalette(selectedNote, $event)">
-                <span class="material-icons-outlined">palette</span>
-            </button>
-            <button mat-icon-button matTooltip="Remind me">
-                <span class="material-icons-outlined">notifications</span>
-            </button>
-            <button mat-icon-button matTooltip="Collaborator">
-                <span class="material-icons-outlined">person_add</span>
-            </button>
-            <button mat-icon-button matTooltip="Add image">
-                <span class="material-icons-outlined">image</span>
-            </button>
-            <button mat-icon-button matTooltip="Archive">
-                <span class="material-icons-outlined">archive</span>
-            </button>
-            <button mat-icon-button matTooltip="More">
-                <span class="material-icons-outlined">more_vert</span>
-            </button>
-            <div class="spacer"></div>
-            <button mat-button class="close-button">Close</button>
-        </div> -->
-
-<!-- Color palette in detail view -->
-<!-- <div *ngIf="activeColorPalette === selectedNote?.id" class="color-palette detail-palette">
-            <div class="color-options">
-                <div *ngFor="let color of colorOptions" class="color-option" [style.background-color]="color"
-                    (click)="changeNoteColor(selectedNote, color, $event)" [class.selected]="selectedNote.color === color">
-                    <span class="material-icons-outlined check-icon" *ngIf="selectedNote.color === color">check</span>
-                </div>
-            </div>
+<app-modal [isVisible]="showAssignLabelModal" (close)="showAssignLabelModal = false">
+    <div>
+        <h6>Label note</h6>
+        <div *ngIf="allLabels !== undefined && allLabels.length > 0">
+            <span *ngFor="let label of allLabels">
+                <mat-checkbox (update)="assignLabelToNote(selectNote, label, $event)">{{label?.labelName}}</mat-checkbox>
+            </span>
         </div>
     </div>
-</div> -->
+</app-modal>
+
+<app-modal [isVisible]="showCollaboratorModal" (close)="showCollaboratorModal = false">
+    <app-collaborator [noteId]="activeCollaboratorNote?.notesId"></app-collaborator>
+</app-modal>
